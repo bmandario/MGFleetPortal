@@ -142,25 +142,25 @@
         </div>
 
         <div class="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          <article class="group relative min-h-[220px] overflow-hidden rounded-3xl border border-white/10 p-6" style="background-image: linear-gradient(rgba(2,6,23,0.65), rgba(2,6,23,0.9)), url('../asset/roadworthy-assessment.png'); background-size: cover; background-position: center;">
+          <article class="group relative min-h-[220px] cursor-pointer overflow-hidden rounded-3xl border border-white/10 p-6" style="background-image: linear-gradient(rgba(2,6,23,0.65), rgba(2,6,23,0.9)), url('../asset/roadworthy-assessment.png'); background-size: cover; background-position: center;">
             <h3 class="text-xl font-bold text-white drop-shadow">Roadworthy Assessment</h3>
-            <p class="mt-3 text-slate-200 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100">Every vehicle assessed against safety and roadworthiness standards. Issues caught before they become breakdowns.</p>
+            <p class="mt-3 text-slate-200 opacity-0 transition-opacity duration-300 group-[.revealed]:opacity-100 md:group-hover:opacity-100">Every vehicle assessed against safety and roadworthiness standards. Issues caught before they become breakdowns.</p>
           </article>
-          <article class="group relative min-h-[220px] overflow-hidden rounded-3xl border border-white/10 p-6" style="background-image: linear-gradient(rgba(2,6,23,0.65), rgba(2,6,23,0.9)), url('../asset/preventive-maintenance.png'); background-size: cover; background-position: center;">
+          <article class="group relative min-h-[220px] cursor-pointer overflow-hidden rounded-3xl border border-white/10 p-6" style="background-image: linear-gradient(rgba(2,6,23,0.65), rgba(2,6,23,0.9)), url('../asset/preventive-maintenance.png'); background-size: cover; background-position: center;">
             <h3 class="text-xl font-bold text-white drop-shadow">Preventive Maintenance Management</h3>
-            <p class="mt-3 text-slate-200 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100">Scheduled PMS tracked per vehicle. Automated reminders ensure no service window is ever missed.</p>
+            <p class="mt-3 text-slate-200 opacity-0 transition-opacity duration-300 group-[.revealed]:opacity-100 md:group-hover:opacity-100">Scheduled PMS tracked per vehicle. Automated reminders ensure no service window is ever missed.</p>
           </article>
-          <article class="group relative min-h-[220px] overflow-hidden rounded-3xl border border-white/10 p-6" style="background-image: linear-gradient(rgba(2,6,23,0.65), rgba(2,6,23,0.9)), url('../asset/fleet-coordinator.png'); background-size: cover; background-position: center;">
+          <article class="group relative min-h-[220px] cursor-pointer overflow-hidden rounded-3xl border border-white/10 p-6" style="background-image: linear-gradient(rgba(2,6,23,0.65), rgba(2,6,23,0.9)), url('../asset/fleet-coordinator.png'); background-size: cover; background-position: center;">
             <h3 class="text-xl font-bold text-white drop-shadow">Dedicated Fleet Coordinator</h3>
-            <p class="mt-3 text-slate-200 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100">Your assigned MG FMS coordinator handles all scheduling, branch coordination, and client communication.</p>
+            <p class="mt-3 text-slate-200 opacity-0 transition-opacity duration-300 group-[.revealed]:opacity-100 md:group-hover:opacity-100">Your assigned MG FMS coordinator handles all scheduling, branch coordination, and client communication.</p>
           </article>
-          <article class="group relative min-h-[220px] overflow-hidden rounded-3xl border border-white/10 p-6" style="background-image: linear-gradient(rgba(2,6,23,0.65), rgba(2,6,23,0.9)), url('../asset/digital-service-record.png'); background-size: cover; background-position: center;">
+          <article class="group relative min-h-[220px] cursor-pointer overflow-hidden rounded-3xl border border-white/10 p-6" style="background-image: linear-gradient(rgba(2,6,23,0.65), rgba(2,6,23,0.9)), url('../asset/digital-service-record.png'); background-size: cover; background-position: center;">
             <h3 class="text-xl font-bold text-white drop-shadow">Complete Digital Service Records</h3>
-            <p class="mt-3 text-slate-200 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100">Full service history for every vehicle. Accessible, verifiable, and tamper-proof — maximizing resale value.</p>
+            <p class="mt-3 text-slate-200 opacity-0 transition-opacity duration-300 group-[.revealed]:opacity-100 md:group-hover:opacity-100">Full service history for every vehicle. Accessible, verifiable, and tamper-proof — maximizing resale value.</p>
           </article>
-          <article class="group relative min-h-[220px] overflow-hidden rounded-3xl border border-white/10 p-6" style="background-image: linear-gradient(rgba(2,6,23,0.65), rgba(2,6,23,0.9)), url('../asset/multi-branch-service.png'); background-size: cover; background-position: center;">
+          <article class="group relative min-h-[220px] cursor-pointer overflow-hidden rounded-3xl border border-white/10 p-6" style="background-image: linear-gradient(rgba(2,6,23,0.65), rgba(2,6,23,0.9)), url('../asset/multi-branch-service.png'); background-size: cover; background-position: center;">
             <h3 class="text-xl font-bold text-white drop-shadow">Multi-Branch Service Network</h3>
-            <p class="mt-3 text-slate-200 opacity-100 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100">Access to MG branches in Cavite, QC, Pampanga, Davao, Palawan, and Batangas. Wherever your fleet operates.</p>
+            <p class="mt-3 text-slate-200 opacity-0 transition-opacity duration-300 group-[.revealed]:opacity-100 md:group-hover:opacity-100">Access to MG branches in Cavite, QC, Pampanga, Davao, Palawan, and Batangas. Wherever your fleet operates.</p>
           </article>
           <article class="rounded-3xl border border-white/10 bg-white/5 p-6">
             <h3 class="text-xl font-bold text-white">Priority Lane Servicing</h3>
@@ -387,12 +387,30 @@
       var menu = document.getElementById('mobile-menu');
       var iconOpen = document.getElementById('menu-icon-open');
       var iconClose = document.getElementById('menu-icon-close');
-      if (!btn || !menu) return;
-      btn.addEventListener('click', function () {
-        var isHidden = menu.classList.toggle('hidden');
-        btn.setAttribute('aria-expanded', String(!isHidden));
-        iconOpen.classList.toggle('hidden', !isHidden);
-        iconClose.classList.toggle('hidden', isHidden);
+      if (btn && menu) {
+        btn.addEventListener('click', function () {
+          var isHidden = menu.classList.toggle('hidden');
+          btn.setAttribute('aria-expanded', String(!isHidden));
+          iconOpen.classList.toggle('hidden', !isHidden);
+          iconClose.classList.toggle('hidden', isHidden);
+        });
+      }
+
+      document.querySelectorAll('article.group').forEach(function (card) {
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-expanded', 'false');
+        var toggle = function () {
+          var revealed = card.classList.toggle('revealed');
+          card.setAttribute('aria-expanded', String(revealed));
+        };
+        card.addEventListener('click', toggle);
+        card.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggle();
+          }
+        });
       });
     })();
   </script>

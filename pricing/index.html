@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing — MG Fleet Management System</title>
+  <meta
+    name="description"
+    content="Transparent, all-inclusive MG FMS pricing — ₱15,000 per vehicle per year. See what's included and how MG FMS compares with other fleet platforms in the Philippines."
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/85 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      <a href="../" class="flex flex-col items-start">
+        <img src="../MG-Fleet-logo.PNG" alt="MG Fleet Management System logo" class="h-10 w-auto object-contain sm:h-12" />
+        <p class="text-xs text-slate-400/70 mt-1">A Master Garage Philippines Company</p>
+      </a>
+
+      <nav class="hidden items-center gap-6 lg:flex">
+        <a href="../" class="text-sm text-slate-300 hover:text-white">Home</a>
+        <a href="../about/" class="text-sm text-slate-300 hover:text-white">About</a>
+        <a href="../solutions/" class="text-sm text-slate-300 hover:text-white">Our Solution</a>
+        <a href="../pricing/" class="text-sm font-semibold text-white">Pricing</a>
+        <a href="../contact/" class="text-sm text-slate-300 hover:text-white">Contact Us</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="../contact/" class="hidden rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-red-400 sm:inline-flex">Book Assessment</a>
+        <button id="menu-toggle" type="button" class="inline-flex items-center justify-center rounded-lg border border-white/15 p-2 text-white lg:hidden" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg id="menu-icon-close" xmlns="http://www.w3.org/2000/svg" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden border-t border-white/10 bg-slate-950/95 lg:hidden">
+      <nav class="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6">
+        <a href="../" class="rounded-lg px-3 py-2 text-base text-slate-300 hover:bg-white/5 hover:text-white">Home</a>
+        <a href="../about/" class="rounded-lg px-3 py-2 text-base text-slate-300 hover:bg-white/5 hover:text-white">About</a>
+        <a href="../solutions/" class="rounded-lg px-3 py-2 text-base text-slate-300 hover:bg-white/5 hover:text-white">Our Solution</a>
+        <a href="../pricing/" class="rounded-lg bg-white/5 px-3 py-2 text-base font-semibold text-white">Pricing</a>
+        <a href="../contact/" class="rounded-lg px-3 py-2 text-base text-slate-300 hover:bg-white/5 hover:text-white">Contact Us</a>
+        <a href="../contact/" class="mt-2 rounded-xl bg-red-500 px-4 py-2 text-center text-base font-semibold text-slate-950">Book Assessment</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Page header -->
+    <section class="relative overflow-hidden border-b border-white/10">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(239,68,68,0.18),transparent_30%),radial-gradient(circle_at_left,rgba(59,130,246,0.14),transparent_25%)]"></div>
+      <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-red-400">Subscription Plans</p>
+        <h1 class="mt-4 text-4xl font-black tracking-tight text-white sm:text-5xl">Transparent, all-inclusive pricing.</h1>
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-slate-300">
+          No hidden fees. No surprises. One subscription that covers everything your fleet needs.
+        </p>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="bg-slate-950">
+      <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+          <div class="rounded-3xl border border-white/10 bg-white/5 p-8">
+            <h3 class="text-2xl font-bold text-white">What is Included</h3>
+            <p class="mt-2 text-slate-300">Every subscription includes:</p>
+            <div class="mt-6 grid gap-4 sm:grid-cols-2">
+              <div class="rounded-2xl bg-slate-900/80 p-4 text-slate-200">Roadworthy assessment per vehicle</div>
+              <div class="rounded-2xl bg-slate-900/80 p-4 text-slate-200">Dedicated fleet coordinator</div>
+              <div class="rounded-2xl bg-slate-900/80 p-4 text-slate-200">Priority branch scheduling</div>
+              <div class="rounded-2xl bg-slate-900/80 p-4 text-slate-200">Complete digital service records</div>
+              <div class="rounded-2xl bg-slate-900/80 p-4 text-slate-200">LTO compliance monitoring</div>
+              <div class="rounded-2xl bg-slate-900/80 p-4 text-slate-200">Monthly fleet performance report</div>
+              <div class="rounded-2xl bg-slate-900/80 p-4 text-slate-200">Multi-branch service access</div>
+              <div class="rounded-2xl bg-slate-900/80 p-4 text-slate-200">Real-time job status tracking</div>
+            </div>
+          </div>
+
+          <div class="rounded-3xl border border-red-500/20 bg-red-500/10 p-8 text-center">
+            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-red-400">Subscription Price</p>
+            <div class="mt-6 text-5xl font-black text-white">₱15,000</div>
+            <p class="mt-2 text-lg text-slate-200">per vehicle per year</p>
+            <div class="mt-6 rounded-2xl bg-slate-950/60 p-5">
+              <p class="text-3xl font-black text-white">₱1,250</p>
+              <p class="text-sm text-slate-300">per vehicle / month</p>
+            </div>
+            <p class="mt-6 text-slate-200">Volume discounts available for fleets of 50+ vehicles.</p>
+            <p class="mt-2 text-slate-200">Payment terms available for qualified clients.</p>
+            <a href="../contact/" class="mt-8 inline-flex rounded-2xl bg-white px-6 py-3 font-semibold text-slate-950 transition hover:bg-slate-100">Request a Custom Proposal</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison -->
+    <section class="border-t border-white/10 bg-slate-900">
+      <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl text-center">
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">How We Compare</p>
+          <h2 class="mt-4 text-3xl font-black text-white sm:text-4xl">The only complete fleet management solution in the Philippines.</h2>
+        </div>
+
+        <div class="mt-12 overflow-hidden rounded-3xl border border-white/10 bg-white/5">
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-white/10 text-left text-sm">
+              <thead class="bg-white/5 text-slate-300">
+                <tr>
+                  <th class="px-6 py-4 font-semibold">Feature</th>
+                  <th class="px-6 py-4 font-semibold text-white">MG FMS</th>
+                  <th class="px-6 py-4 font-semibold">Fleetable / Skyhawk</th>
+                  <th class="px-6 py-4 font-semibold">GPS Providers</th>
+                  <th class="px-6 py-4 font-semibold">Toyota FMS</th>
+                  <th class="px-6 py-4 font-semibold">FUSO FMS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/10 text-slate-200">
+                <tr><td class="px-6 py-4 font-medium text-white">Multi-brand vehicle support</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td></tr>
+                <tr><td class="px-6 py-4 font-medium text-white">Physical service network owned</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td></tr>
+                <tr><td class="px-6 py-4 font-medium text-white">Roadworthy assessment system</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td></tr>
+                <tr><td class="px-6 py-4 font-medium text-white">Immediate branch payment guarantee</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td></tr>
+                <tr><td class="px-6 py-4 font-medium text-white">Fleet client payment terms / financing</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td></tr>
+                <tr><td class="px-6 py-4 font-medium text-white">Complete digital service records</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✓</td></tr>
+                <tr><td class="px-6 py-4 font-medium text-white">Dedicated fleet coordinator</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td></tr>
+                <tr><td class="px-6 py-4 font-medium text-white">National branch coverage (PH)</td><td class="px-6 py-4">✓</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">✘</td><td class="px-6 py-4">Toyota only</td><td class="px-6 py-4">FUSO only</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <p class="mx-auto mt-8 max-w-4xl text-center text-lg text-slate-300">
+          No other company in the Philippines combines a fleet management platform, roadworthy assessments, owned service branches, dedicated coordination, and client financing in one subscription.
+        </p>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="border-t border-white/10 bg-slate-950">
+      <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div class="rounded-[2rem] border border-white/10 bg-gradient-to-br from-red-500/20 via-white/5 to-sky-500/10 p-8 text-center sm:p-12">
+          <h2 class="text-3xl font-black text-white sm:text-4xl">Get a tailored proposal for your fleet.</h2>
+          <p class="mt-6 text-lg leading-8 text-slate-300">
+            Tell us your fleet size and composition — we'll send you a customized subscription quote.
+          </p>
+          <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <a href="../solutions/" class="rounded-2xl border border-white/15 px-6 py-3 font-semibold text-white transition hover:bg-white/5">Explore the Solution</a>
+            <a href="../contact/" class="rounded-2xl bg-red-500 px-6 py-3 font-semibold text-slate-950 transition hover:bg-red-400">Request a Proposal</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10 bg-slate-950">
+    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p class="text-lg font-bold text-white">MG Fleet Management System</p>
+          <p class="mt-1 text-slate-400">A Master Garage Philippines Company</p>
+        </div>
+        <div class="text-sm text-slate-400">
+          Cavite · QC · Pampanga · Davao · Palawan · Batangas
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('menu-toggle');
+      var menu = document.getElementById('mobile-menu');
+      var iconOpen = document.getElementById('menu-icon-open');
+      var iconClose = document.getElementById('menu-icon-close');
+      if (!btn || !menu) return;
+      btn.addEventListener('click', function () {
+        var isHidden = menu.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', String(!isHidden));
+        iconOpen.classList.toggle('hidden', !isHidden);
+        iconClose.classList.toggle('hidden', isHidden);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — MG Fleet Management System</title>
+  <meta
+    name="description"
+    content="Get in touch with MG Fleet Management System. Book a fleet assessment, request a custom proposal, or talk to our team about your fleet."
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/85 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      <a href="../" class="flex flex-col items-start">
+        <img src="../MG-Fleet-logo.PNG" alt="MG Fleet Management System logo" class="h-10 w-auto object-contain sm:h-12" />
+        <p class="text-xs text-slate-400/70 mt-1">A Master Garage Philippines Company</p>
+      </a>
+
+      <nav class="hidden items-center gap-6 lg:flex">
+        <a href="../" class="text-sm text-slate-300 hover:text-white">Home</a>
+        <a href="../about/" class="text-sm text-slate-300 hover:text-white">About</a>
+        <a href="../solutions/" class="text-sm text-slate-300 hover:text-white">Our Solution</a>
+        <a href="../pricing/" class="text-sm text-slate-300 hover:text-white">Pricing</a>
+        <a href="../contact/" class="text-sm font-semibold text-white">Contact Us</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="#contact-form" class="hidden rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-red-400 sm:inline-flex">Book Assessment</a>
+        <button id="menu-toggle" type="button" class="inline-flex items-center justify-center rounded-lg border border-white/15 p-2 text-white lg:hidden" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+          <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg id="menu-icon-close" xmlns="http://www.w3.org/2000/svg" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden border-t border-white/10 bg-slate-950/95 lg:hidden">
+      <nav class="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 sm:px-6">
+        <a href="../" class="rounded-lg px-3 py-2 text-base text-slate-300 hover:bg-white/5 hover:text-white">Home</a>
+        <a href="../about/" class="rounded-lg px-3 py-2 text-base text-slate-300 hover:bg-white/5 hover:text-white">About</a>
+        <a href="../solutions/" class="rounded-lg px-3 py-2 text-base text-slate-300 hover:bg-white/5 hover:text-white">Our Solution</a>
+        <a href="../pricing/" class="rounded-lg px-3 py-2 text-base text-slate-300 hover:bg-white/5 hover:text-white">Pricing</a>
+        <a href="../contact/" class="rounded-lg bg-white/5 px-3 py-2 text-base font-semibold text-white">Contact Us</a>
+        <a href="#contact-form" class="mt-2 rounded-xl bg-red-500 px-4 py-2 text-center text-base font-semibold text-slate-950">Book Assessment</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Page header -->
+    <section class="relative overflow-hidden border-b border-white/10">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(239,68,68,0.18),transparent_30%),radial-gradient(circle_at_left,rgba(59,130,246,0.14),transparent_25%)]"></div>
+      <div class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-red-400">Let's Get Started</p>
+        <h1 class="mt-4 text-4xl font-black tracking-tight text-white sm:text-5xl">Talk to our fleet team.</h1>
+        <p class="mt-6 max-w-3xl text-lg leading-8 text-slate-300">
+          Book a fleet assessment, request a custom proposal, or just ask a question. A coordinator will get back to you within one business day.
+        </p>
+      </div>
+    </section>
+
+    <!-- Contact form + info -->
+    <section class="bg-slate-950">
+      <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <!-- Form -->
+          <div id="contact-form" class="rounded-3xl border border-white/10 bg-white/5 p-8">
+            <h2 class="text-2xl font-bold text-white">Send us a message</h2>
+            <p class="mt-2 text-slate-300">Fill in the form below — your default email app will open with the message ready to send.</p>
+
+            <form id="mg-contact-form" class="mt-8 grid gap-5" novalidate>
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label for="name" class="block text-sm font-medium text-slate-200">Full Name <span class="text-red-400">*</span></label>
+                  <input type="text" id="name" name="name" required class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="Juan dela Cruz" />
+                </div>
+                <div>
+                  <label for="company" class="block text-sm font-medium text-slate-200">Company <span class="text-red-400">*</span></label>
+                  <input type="text" id="company" name="company" required class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="Your company name" />
+                </div>
+              </div>
+
+              <div class="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <label for="email" class="block text-sm font-medium text-slate-200">Email <span class="text-red-400">*</span></label>
+                  <input type="email" id="email" name="email" required class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="you@example.com" />
+                </div>
+                <div>
+                  <label for="phone" class="block text-sm font-medium text-slate-200">Phone <span class="text-red-400">*</span></label>
+                  <input type="tel" id="phone" name="phone" required class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="+63 9XX XXX XXXX" />
+                </div>
+              </div>
+
+              <div>
+                <label for="fleetSize" class="block text-sm font-medium text-slate-200">Fleet Size <span class="text-red-400">*</span></label>
+                <select id="fleetSize" name="fleetSize" required class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500">
+                  <option value="">Select fleet size</option>
+                  <option value="1–10 vehicles">1–10 vehicles</option>
+                  <option value="11–25 vehicles">11–25 vehicles</option>
+                  <option value="26–50 vehicles">26–50 vehicles</option>
+                  <option value="51–100 vehicles">51–100 vehicles</option>
+                  <option value="100+ vehicles">100+ vehicles</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="message" class="block text-sm font-medium text-slate-200">Message <span class="text-red-400">*</span></label>
+                <textarea id="message" name="message" rows="5" required class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="Tell us about your fleet and what you'd like to discuss."></textarea>
+              </div>
+
+              <p id="form-error" class="hidden text-sm text-red-400">Please complete all required fields.</p>
+
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-xs text-slate-400">Your message will be sent via your default email client.</p>
+                <button type="submit" class="rounded-2xl bg-red-500 px-6 py-3 text-center font-semibold text-slate-950 transition hover:bg-red-400">Send Message</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Info -->
+          <div class="space-y-6">
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-8">
+              <h3 class="text-xl font-bold text-white">Direct Contact</h3>
+              <ul class="mt-6 space-y-4 text-slate-300">
+                <li>
+                  <span class="block text-xs uppercase tracking-[0.2em] text-slate-400">Email</span>
+                  <a href="mailto:bryan.mandario@gmail.com" class="mt-1 block font-medium text-white hover:text-red-400">bryan.mandario@gmail.com</a>
+                </li>
+                <li>
+                  <span class="block text-xs uppercase tracking-[0.2em] text-slate-400">Response Time</span>
+                  <span class="mt-1 block text-white">Within 1 business day</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="rounded-3xl border border-white/10 bg-white/5 p-8">
+              <h3 class="text-xl font-bold text-white">Service Branches</h3>
+              <p class="mt-2 text-sm text-slate-400">Six branches nationwide — we coordinate from the one nearest your fleet.</p>
+              <div class="mt-6 grid gap-3 sm:grid-cols-2">
+                <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-3"><div class="text-sm font-semibold text-white">MG Cavite</div><div class="text-xs text-emerald-300">Active</div></div>
+                <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-3"><div class="text-sm font-semibold text-white">MG QC</div><div class="text-xs text-emerald-300">Active</div></div>
+                <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-3"><div class="text-sm font-semibold text-white">MG Pampanga</div><div class="text-xs text-emerald-300">Active</div></div>
+                <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-3"><div class="text-sm font-semibold text-white">MG Davao</div><div class="text-xs text-emerald-300">Active</div></div>
+                <div class="rounded-2xl border border-white/10 bg-slate-900/60 p-3"><div class="text-sm font-semibold text-white">MG Palawan</div><div class="text-xs text-emerald-300">Active</div></div>
+                <div class="rounded-2xl border border-red-500/20 bg-red-500/10 p-3"><div class="text-sm font-semibold text-white">MG Batangas</div><div class="text-xs text-red-400">Opening Soon</div></div>
+              </div>
+            </div>
+
+            <div class="rounded-3xl border border-red-500/20 bg-red-500/10 p-8">
+              <h3 class="text-xl font-bold text-white">What happens next</h3>
+              <ol class="mt-4 space-y-3 text-sm text-slate-200">
+                <li><span class="font-semibold text-white">1.</span> A coordinator reviews your request and reaches out within 1 business day.</li>
+                <li><span class="font-semibold text-white">2.</span> We schedule a fleet assessment meeting based on your fleet size.</li>
+                <li><span class="font-semibold text-white">3.</span> You receive a tailored proposal with pricing and timelines.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10 bg-slate-950">
+    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p class="text-lg font-bold text-white">MG Fleet Management System</p>
+          <p class="mt-1 text-slate-400">A Master Garage Philippines Company</p>
+        </div>
+        <div class="text-sm text-slate-400">
+          Cavite · QC · Pampanga · Davao · Palawan · Batangas
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('menu-toggle');
+      var menu = document.getElementById('mobile-menu');
+      var iconOpen = document.getElementById('menu-icon-open');
+      var iconClose = document.getElementById('menu-icon-close');
+      if (btn && menu) {
+        btn.addEventListener('click', function () {
+          var isHidden = menu.classList.toggle('hidden');
+          btn.setAttribute('aria-expanded', String(!isHidden));
+          iconOpen.classList.toggle('hidden', !isHidden);
+          iconClose.classList.toggle('hidden', isHidden);
+        });
+      }
+
+      var form = document.getElementById('mg-contact-form');
+      var errorEl = document.getElementById('form-error');
+      if (!form) return;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var name = document.getElementById('name').value.trim();
+        var company = document.getElementById('company').value.trim();
+        var email = document.getElementById('email').value.trim();
+        var phone = document.getElementById('phone').value.trim();
+        var fleetSize = document.getElementById('fleetSize').value.trim();
+        var message = document.getElementById('message').value.trim();
+
+        if (!name || !company || !email || !phone || !fleetSize || !message) {
+          errorEl.classList.remove('hidden');
+          return;
+        }
+        errorEl.classList.add('hidden');
+
+        var subject = 'Fleet Assessment Inquiry — ' + company;
+        var body = [
+          'Name: ' + name,
+          'Company: ' + company,
+          'Email: ' + email,
+          'Phone: ' + phone,
+          'Fleet Size: ' + fleetSize,
+          '',
+          'Message:',
+          message
+        ].join('\n');
+
+        var mailto = 'mailto:bryan.mandario@gmail.com'
+          + '?subject=' + encodeURIComponent(subject)
+          + '&body=' + encodeURIComponent(body);
+
+        window.location.href = mailto;
+      });
+    })();
+  </script>
+</body>
+</html>

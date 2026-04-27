@@ -138,7 +138,7 @@
             <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <h2 class="text-2xl font-bold text-white">Required Documents</h2>
-                <p class="mt-2 text-sm text-slate-300">Upload all 11 documents below. Accepted formats: <span class="text-white">PDF or JPG</span>. Max <span class="text-white">10 MB</span> per file.</p>
+                <p class="mt-2 text-sm text-slate-300">Upload all 11 documents below. Accepted formats: <span class="text-white">PDF or JPG</span>. Max <span class="text-white">5 MB</span> per file.</p>
               </div>
               <div class="rounded-xl border border-white/10 bg-slate-900/60 px-4 py-2 text-sm text-slate-300">
                 <span id="upload-count" class="font-mono text-white">0</span> / 11 selected
@@ -196,7 +196,7 @@
       }
 
       // --- Constants ---
-      var MAX_FILE_BYTES = 10 * 1024 * 1024;
+      var MAX_FILE_BYTES = 5 * 1024 * 1024;
       var ALLOWED_EXTS = ['.pdf', '.jpg', '.jpeg'];
       var ALLOWED_TYPES = ['application/pdf', 'image/jpeg'];
 
@@ -234,7 +234,7 @@
               '<div class="slot-idle mt-3 flex-wrap items-center gap-3">',
                 '<input type="file" id="file-' + d.key + '" data-key="' + d.key + '" accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg" class="hidden" />',
                 '<label for="file-' + d.key + '" class="cursor-pointer rounded-xl border border-white/15 bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">Choose file</label>',
-                '<span class="text-xs text-slate-400">PDF or JPG · max 10 MB</span>',
+                '<span class="text-xs text-slate-400">PDF or JPG · max 5 MB</span>',
               '</div>',
 
               '<div class="slot-ready mt-3 flex-wrap items-center gap-3">',
@@ -286,7 +286,7 @@
         var extOk = ALLOWED_EXTS.some(function (ext) { return name.endsWith(ext); });
         var typeOk = !file.type || ALLOWED_TYPES.indexOf(file.type) !== -1;
         if (!extOk || !typeOk) return 'Only PDF or JPG files are accepted.';
-        if (file.size > MAX_FILE_BYTES) return 'File is ' + formatBytes(file.size) + '. Max allowed is 10 MB.';
+        if (file.size > MAX_FILE_BYTES) return 'File is ' + formatBytes(file.size) + '. Max allowed is 5 MB.';
         if (file.size === 0) return 'File is empty.';
         return null;
       }

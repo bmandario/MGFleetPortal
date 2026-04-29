@@ -188,7 +188,7 @@
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
     import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
     import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
-    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js';
+    import { getStorage, ref as storageRef, uploadBytesResumable, deleteObject } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyAybPnwAjnUiNurQ0v_MHpRDW-rnEsFKGU",
@@ -388,15 +388,13 @@
             resolve
           );
         });
-        const url = await getDownloadURL(ref);
 
         slotState[key] = {
           state: 'ready',
           fileName: file.name,
           size: file.size,
           contentType,
-          storagePath: path,
-          downloadUrl: url
+          storagePath: path
         };
         renderSlot(key);
       } catch (err) {
@@ -494,8 +492,7 @@
           fileName: s.fileName || '',
           size: s.size || 0,
           contentType: s.contentType || '',
-          storagePath: s.storagePath || '',
-          downloadUrl: s.downloadUrl || ''
+          storagePath: s.storagePath || ''
         };
       });
 

@@ -13,13 +13,24 @@
     html { scroll-behavior: smooth; }
     body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 
-    .upload-slot[data-state="idle"]    .slot-idle    { display: flex; }
-    .upload-slot[data-state="ready"]   .slot-ready   { display: flex; }
-    .upload-slot[data-state="error"]   .slot-error   { display: flex; }
-    .upload-slot .slot-idle, .upload-slot .slot-ready, .upload-slot .slot-error { display: none; }
+    .upload-slot[data-state="idle"]      .slot-idle      { display: flex; }
+    .upload-slot[data-state="uploading"] .slot-uploading { display: flex; }
+    .upload-slot[data-state="ready"]     .slot-ready     { display: flex; }
+    .upload-slot[data-state="error"]     .slot-error     { display: flex; }
+    .upload-slot .slot-idle, .upload-slot .slot-uploading, .upload-slot .slot-ready, .upload-slot .slot-error { display: none; }
 
-    .upload-slot[data-state="ready"] { border-color: rgba(16,185,129,0.5); background-color: rgba(16,185,129,0.08); }
-    .upload-slot[data-state="error"] { border-color: rgba(239,68,68,0.5);  background-color: rgba(239,68,68,0.08); }
+    .upload-slot[data-state="ready"]     { border-color: rgba(16,185,129,0.5); background-color: rgba(16,185,129,0.08); }
+    .upload-slot[data-state="error"]     { border-color: rgba(239,68,68,0.5);  background-color: rgba(239,68,68,0.08); }
+    .upload-slot[data-state="uploading"] { border-color: rgba(59,130,246,0.5); background-color: rgba(59,130,246,0.08); }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.25);
+      border-top-color: rgba(96,165,250,1);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased">
@@ -74,22 +85,15 @@
     <section class="bg-slate-950">
       <div class="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
 
-        <!-- Notice banner: Firebase pending -->
-        <div class="mb-8 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">
-          <span class="font-semibold text-amber-100">Preview mode:</span> file uploads to cloud storage are not yet active. Submitting will validate your entries locally; the secure upload integration will be enabled shortly.
-        </div>
-
-        <!-- Success panel (hidden until submit) -->
         <div id="success-panel" class="hidden rounded-3xl border border-emerald-500/30 bg-emerald-500/10 p-8 text-center">
           <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
           </div>
-          <h2 class="mt-6 text-3xl font-black text-white">Form validated successfully.</h2>
-          <p class="mt-4 text-slate-200">All fields and 11 documents passed validation. Once cloud storage is enabled, real submissions will be routed to our coordinator.</p>
-          <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a href="../" class="rounded-2xl border border-white/15 px-6 py-3 font-semibold text-white transition hover:bg-white/5">Back to Home</a>
-            <button id="reset-btn" type="button" class="rounded-2xl bg-white px-6 py-3 font-semibold text-slate-950 transition hover:bg-slate-100">Start a new submission</button>
-          </div>
+          <h2 class="mt-6 text-3xl font-black text-white">Thank you! Your application was submitted.</h2>
+          <p class="mt-4 text-slate-200">Reference ID for your submission:</p>
+          <p id="ref-id" class="mt-2 text-sm font-mono text-emerald-300"></p>
+          <p class="mt-6 text-slate-300">A coordinator will reach out within 1 business day to schedule your fleet assessment.</p>
+          <a href="../" class="mt-8 inline-flex rounded-2xl bg-white px-6 py-3 font-semibold text-slate-950 transition hover:bg-slate-100">Back to Home</a>
         </div>
 
         <form id="signup-form" class="space-y-10">
@@ -141,7 +145,7 @@
                 <p class="mt-2 text-sm text-slate-300">Upload all 11 documents below. Accepted formats: <span class="text-white">PDF or JPG</span>. Max <span class="text-white">5 MB</span> per file.</p>
               </div>
               <div class="rounded-xl border border-white/10 bg-slate-900/60 px-4 py-2 text-sm text-slate-300">
-                <span id="upload-count" class="font-mono text-white">0</span> / 11 selected
+                <span id="upload-count" class="font-mono text-white">0</span> / 11 uploaded
               </div>
             </div>
 
@@ -153,6 +157,7 @@
           <!-- Submit -->
           <div class="rounded-3xl border border-red-500/20 bg-red-500/10 p-6 sm:p-8">
             <p id="form-error" class="hidden mb-4 text-sm text-red-300"></p>
+            <p id="auth-status" class="mb-4 text-xs text-slate-400">Connecting to secure submission service…</p>
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <p class="text-sm text-slate-200">By submitting, you confirm the documents and information are accurate.</p>
               <button id="submit-btn" type="submit" disabled class="rounded-2xl bg-red-500 px-6 py-3 font-semibold text-slate-950 transition hover:bg-red-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400">
@@ -179,199 +184,359 @@
     </div>
   </footer>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js';
+    import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js';
+    import { getFirestore, doc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
+    import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/10.14.0/firebase-storage.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAybPnwAjnUiNurQ0v_MHpRDW-rnEsFKGU",
+      authDomain: "mg-fms.firebaseapp.com",
+      projectId: "mg-fms",
+      storageBucket: "mg-fms.firebasestorage.app",
+      messagingSenderId: "925519572545",
+      appId: "1:925519572545:web:ca482b6c31772a2895e0c0",
+      measurementId: "G-14WPXKZEPL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const MAX_FILE_BYTES = 5 * 1024 * 1024;
+    const ALLOWED_EXTS = ['.pdf', '.jpg', '.jpeg'];
+    const ALLOWED_TYPES = ['application/pdf', 'image/jpeg'];
+
+    const DOCUMENTS = [
+      { key: 'dti',             label: 'DTI Certificate of Business Name Registration (for Sole Proprietorship)' },
+      { key: 'sec',             label: 'SEC Certificate of Incorporation with Articles of Incorporation and By-Laws' },
+      { key: 'gis',             label: 'Latest General Information Sheet (GIS) filed with the SEC' },
+      { key: 'bir2303',         label: 'BIR Certificate of Registration (Form 2303) and VAT status confirmation' },
+      { key: 'mayorsPermit',    label: "Current Mayor's or Business Permit issued by the LGU" },
+      { key: 'boardResolution', label: "Board Resolution or Secretary's Certificate authorizing the signatory" },
+      { key: 'validIds',        label: 'Two (2) valid government-issued IDs of the authorized signatory' },
+      { key: 'afs',             label: 'Audited Financial Statements for the last two (2) fiscal years' },
+      { key: 'bankStatements',  label: 'Bank statements covering the last three (3) months of operations' },
+      { key: 'locationMap',     label: 'Location map of the registered and operating addresses' },
+      { key: 'bir2307',         label: 'Accomplished BIR Form 2307 template (if subject to withholding tax)' }
+    ];
+
+    // slot key -> { state, file?, fileName?, size?, contentType?, storagePath?, downloadUrl?, error?, task? }
+    const slotState = {};
+    DOCUMENTS.forEach((d) => { slotState[d.key] = { state: 'idle' }; });
+
+    let currentUid = null;
+    let isSubmitting = false;
+
+    // --- Mobile menu ---
     (function () {
-      // --- Mobile menu ---
-      var btn = document.getElementById('menu-toggle');
-      var menu = document.getElementById('mobile-menu');
-      var iconOpen = document.getElementById('menu-icon-open');
-      var iconClose = document.getElementById('menu-icon-close');
-      if (btn && menu) {
-        btn.addEventListener('click', function () {
-          var isHidden = menu.classList.toggle('hidden');
-          btn.setAttribute('aria-expanded', String(!isHidden));
-          iconOpen.classList.toggle('hidden', !isHidden);
-          iconClose.classList.toggle('hidden', isHidden);
+      const btn = document.getElementById('menu-toggle');
+      const menu = document.getElementById('mobile-menu');
+      const iconOpen = document.getElementById('menu-icon-open');
+      const iconClose = document.getElementById('menu-icon-close');
+      if (!btn || !menu) return;
+      btn.addEventListener('click', () => {
+        const isHidden = menu.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', String(!isHidden));
+        iconOpen.classList.toggle('hidden', !isHidden);
+        iconClose.classList.toggle('hidden', isHidden);
+      });
+    })();
+
+    // --- Render slots ---
+    const listEl = document.getElementById('upload-list');
+    DOCUMENTS.forEach((d, i) => {
+      const slot = document.createElement('div');
+      slot.className = 'upload-slot rounded-2xl border-2 border-dashed border-white/15 bg-slate-900/40 p-4 transition';
+      slot.dataset.state = 'idle';
+      slot.dataset.key = d.key;
+      slot.innerHTML = `
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-semibold text-slate-300">${i + 1}</span>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-medium text-white">${d.label} <span class="text-red-400">*</span></p>
+
+            <div class="slot-idle mt-3 flex-wrap items-center gap-3">
+              <input type="file" id="file-${d.key}" data-key="${d.key}" accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg" class="hidden" />
+              <label for="file-${d.key}" class="cursor-pointer rounded-xl border border-white/15 bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">Choose file</label>
+              <span class="text-xs text-slate-400">PDF or JPG · max 5 MB</span>
+            </div>
+
+            <div class="slot-uploading mt-3 flex-wrap items-center gap-3">
+              <span class="spinner shrink-0"></span>
+              <span class="upload-filename min-w-0 truncate text-sm text-sky-100"></span>
+              <span class="ml-auto text-xs text-sky-300">Uploading… <span class="upload-progress font-mono">0%</span></span>
+            </div>
+
+            <div class="slot-ready mt-3 flex-wrap items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              <span class="upload-filename min-w-0 truncate text-sm text-white"></span>
+              <span class="upload-size text-xs text-slate-400"></span>
+              <button type="button" data-action="remove" data-key="${d.key}" class="ml-auto rounded-lg border border-white/15 px-3 py-1 text-xs text-slate-200 transition hover:bg-white/5">Remove</button>
+            </div>
+
+            <div class="slot-error mt-3 flex-col gap-2">
+              <p class="upload-error text-sm text-red-300"></p>
+              <div class="flex items-center gap-3">
+                <input type="file" id="retry-${d.key}" data-key="${d.key}" accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg" class="hidden" />
+                <label for="retry-${d.key}" class="cursor-pointer rounded-xl border border-white/15 bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">Choose another file</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      listEl.appendChild(slot);
+    });
+
+    listEl.addEventListener('change', (e) => {
+      const inp = e.target;
+      if (inp && inp.matches && inp.matches('input[type="file"]')) {
+        const key = inp.dataset.key;
+        const file = inp.files && inp.files[0];
+        if (file) handleFile(key, file);
+        inp.value = '';
+      }
+    });
+
+    listEl.addEventListener('click', (e) => {
+      const btn = e.target.closest && e.target.closest('button[data-action="remove"]');
+      if (!btn) return;
+      removeFile(btn.dataset.key);
+    });
+
+    function renderSlot(key) {
+      const slotEl = document.querySelector(`.upload-slot[data-key="${key}"]`);
+      const s = slotState[key];
+      slotEl.dataset.state = s.state;
+      if (s.state === 'uploading' || s.state === 'ready') {
+        const fnEl = slotEl.querySelector('.upload-filename');
+        if (fnEl) fnEl.textContent = s.fileName || '';
+      }
+      if (s.state === 'ready') {
+        slotEl.querySelector('.upload-size').textContent = formatBytes(s.size || 0);
+      }
+      if (s.state === 'error') {
+        slotEl.querySelector('.upload-error').textContent = s.error || 'Upload failed.';
+      }
+      updateUploadCount();
+      updateSubmitState();
+    }
+
+    function setProgress(key, pct) {
+      const el = document.querySelector(`.upload-slot[data-key="${key}"] .upload-progress`);
+      if (el) el.textContent = pct + '%';
+    }
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    function validateFile(file) {
+      const name = (file.name || '').toLowerCase();
+      const extOk = ALLOWED_EXTS.some((ext) => name.endsWith(ext));
+      const typeOk = !file.type || ALLOWED_TYPES.indexOf(file.type) !== -1;
+      if (!extOk || !typeOk) return 'Only PDF or JPG files are accepted.';
+      if (file.size > MAX_FILE_BYTES) return `File is ${formatBytes(file.size)}. Max allowed is 5 MB.`;
+      if (file.size === 0) return 'File is empty.';
+      return null;
+    }
+
+    async function handleFile(key, file) {
+      const err = validateFile(file);
+      if (err) {
+        slotState[key] = { state: 'error', error: err };
+        renderSlot(key);
+        return;
+      }
+      if (!currentUid) {
+        slotState[key] = { state: 'error', error: 'Not connected yet — please wait a moment then try again.' };
+        renderSlot(key);
+        return;
+      }
+
+      const isPdf = file.name.toLowerCase().endsWith('.pdf');
+      const ext = isPdf ? 'pdf' : 'jpg';
+      const contentType = isPdf ? 'application/pdf' : 'image/jpeg';
+      const path = `landing_signups/${currentUid}/${key}.${ext}`;
+
+      slotState[key] = {
+        state: 'uploading',
+        fileName: file.name,
+        size: file.size,
+        contentType
+      };
+      renderSlot(key);
+      setProgress(key, 0);
+
+      try {
+        const ref = storageRef(storage, path);
+        const task = uploadBytesResumable(ref, file, { contentType });
+        slotState[key].task = task;
+
+        await new Promise((resolve, reject) => {
+          task.on(
+            'state_changed',
+            (snap) => {
+              const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+              setProgress(key, pct);
+            },
+            reject,
+            resolve
+          );
         });
-      }
+        const url = await getDownloadURL(ref);
 
-      // --- Constants ---
-      var MAX_FILE_BYTES = 5 * 1024 * 1024;
-      var ALLOWED_EXTS = ['.pdf', '.jpg', '.jpeg'];
-      var ALLOWED_TYPES = ['application/pdf', 'image/jpeg'];
-
-      var DOCUMENTS = [
-        { key: 'dti',             label: 'DTI Certificate of Business Name Registration (for Sole Proprietorship)' },
-        { key: 'sec',             label: 'SEC Certificate of Incorporation with Articles of Incorporation and By-Laws' },
-        { key: 'gis',             label: 'Latest General Information Sheet (GIS) filed with the SEC' },
-        { key: 'bir2303',         label: 'BIR Certificate of Registration (Form 2303) and VAT status confirmation' },
-        { key: 'mayorsPermit',    label: "Current Mayor's or Business Permit issued by the LGU" },
-        { key: 'boardResolution', label: "Board Resolution or Secretary's Certificate authorizing the signatory" },
-        { key: 'validIds',        label: 'Two (2) valid government-issued IDs of the authorized signatory' },
-        { key: 'afs',             label: 'Audited Financial Statements for the last two (2) fiscal years' },
-        { key: 'bankStatements',  label: 'Bank statements covering the last three (3) months of operations' },
-        { key: 'locationMap',     label: 'Location map of the registered and operating addresses' },
-        { key: 'bir2307',         label: 'Accomplished BIR Form 2307 template (if subject to withholding tax)' }
-      ];
-
-      // slot key -> { state: 'idle'|'ready'|'error', file?: File, error?: string }
-      var slotState = {};
-      DOCUMENTS.forEach(function (d) { slotState[d.key] = { state: 'idle' }; });
-
-      // --- Render slots ---
-      var listEl = document.getElementById('upload-list');
-      DOCUMENTS.forEach(function (d, i) {
-        var slot = document.createElement('div');
-        slot.className = 'upload-slot rounded-2xl border-2 border-dashed border-white/15 bg-slate-900/40 p-4 transition';
-        slot.dataset.state = 'idle';
-        slot.dataset.key = d.key;
-        slot.innerHTML = [
-          '<div class="flex items-start gap-3">',
-            '<span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-semibold text-slate-300">' + (i + 1) + '</span>',
-            '<div class="min-w-0 flex-1">',
-              '<p class="text-sm font-medium text-white">' + d.label + ' <span class="text-red-400">*</span></p>',
-
-              '<div class="slot-idle mt-3 flex-wrap items-center gap-3">',
-                '<input type="file" id="file-' + d.key + '" data-key="' + d.key + '" accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg" class="hidden" />',
-                '<label for="file-' + d.key + '" class="cursor-pointer rounded-xl border border-white/15 bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">Choose file</label>',
-                '<span class="text-xs text-slate-400">PDF or JPG · max 5 MB</span>',
-              '</div>',
-
-              '<div class="slot-ready mt-3 flex-wrap items-center gap-3">',
-                '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>',
-                '<span class="upload-filename min-w-0 truncate text-sm text-white"></span>',
-                '<span class="upload-size text-xs text-slate-400"></span>',
-                '<button type="button" data-action="remove" data-key="' + d.key + '" class="ml-auto rounded-lg border border-white/15 px-3 py-1 text-xs text-slate-200 transition hover:bg-white/5">Remove</button>',
-              '</div>',
-
-              '<div class="slot-error mt-3 flex-col gap-2">',
-                '<p class="upload-error text-sm text-red-300"></p>',
-                '<div class="flex items-center gap-3">',
-                  '<input type="file" id="retry-' + d.key + '" data-key="' + d.key + '" accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg" class="hidden" />',
-                  '<label for="retry-' + d.key + '" class="cursor-pointer rounded-xl border border-white/15 bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700">Choose another file</label>',
-                '</div>',
-              '</div>',
-
-            '</div>',
-          '</div>'
-        ].join('');
-        listEl.appendChild(slot);
-      });
-
-      listEl.addEventListener('change', function (e) {
-        var inp = e.target;
-        if (inp && inp.matches && inp.matches('input[type="file"]')) {
-          var key = inp.dataset.key;
-          var file = inp.files && inp.files[0];
-          if (file) handleFile(key, file);
-          inp.value = '';
+        slotState[key] = {
+          state: 'ready',
+          fileName: file.name,
+          size: file.size,
+          contentType,
+          storagePath: path,
+          downloadUrl: url
+        };
+        renderSlot(key);
+      } catch (err) {
+        console.error('upload error', err);
+        let msg = 'Upload failed. Please try again.';
+        if (err && err.code === 'storage/unauthorized') {
+          msg = 'Upload not permitted. The Storage security rules may need to be re-published.';
+        } else if (err && err.code === 'storage/canceled') {
+          msg = 'Upload was canceled.';
+        } else if (err && err.code === 'storage/quota-exceeded') {
+          msg = 'Storage quota exceeded.';
+        } else if (err && err.message) {
+          msg = err.message;
         }
-      });
-
-      listEl.addEventListener('click', function (e) {
-        var btn = e.target.closest && e.target.closest('button[data-action="remove"]');
-        if (!btn) return;
-        slotState[btn.dataset.key] = { state: 'idle' };
-        renderSlot(btn.dataset.key);
-      });
-
-      function formatBytes(bytes) {
-        if (bytes < 1024) return bytes + ' B';
-        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-        return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-      }
-
-      function validateFile(file) {
-        var name = (file.name || '').toLowerCase();
-        var extOk = ALLOWED_EXTS.some(function (ext) { return name.endsWith(ext); });
-        var typeOk = !file.type || ALLOWED_TYPES.indexOf(file.type) !== -1;
-        if (!extOk || !typeOk) return 'Only PDF or JPG files are accepted.';
-        if (file.size > MAX_FILE_BYTES) return 'File is ' + formatBytes(file.size) + '. Max allowed is 5 MB.';
-        if (file.size === 0) return 'File is empty.';
-        return null;
-      }
-
-      function handleFile(key, file) {
-        var err = validateFile(file);
-        if (err) {
-          slotState[key] = { state: 'error', error: err };
-        } else {
-          slotState[key] = { state: 'ready', file: file };
-        }
+        slotState[key] = { state: 'error', error: msg };
         renderSlot(key);
       }
+    }
 
-      function renderSlot(key) {
-        var slotEl = document.querySelector('.upload-slot[data-key="' + key + '"]');
-        var s = slotState[key];
-        slotEl.dataset.state = s.state;
-        if (s.state === 'ready') {
-          slotEl.querySelector('.upload-filename').textContent = s.file.name;
-          slotEl.querySelector('.upload-size').textContent = formatBytes(s.file.size);
-        } else if (s.state === 'error') {
-          slotEl.querySelector('.upload-error').textContent = s.error || 'Invalid file.';
-        }
-        updateUploadCount();
+    async function removeFile(key) {
+      const s = slotState[key];
+      if (s && s.storagePath) {
+        try { await deleteObject(storageRef(storage, s.storagePath)); } catch (_) {}
+      }
+      slotState[key] = { state: 'idle' };
+      renderSlot(key);
+    }
+
+    function updateUploadCount() {
+      const done = DOCUMENTS.filter((d) => slotState[d.key].state === 'ready').length;
+      document.getElementById('upload-count').textContent = String(done);
+    }
+
+    function formFieldsValid() {
+      const ids = ['companyName', 'companyAddress', 'contactPerson', 'contactNumber', 'emailAddress', 'fleetSize'];
+      return ids.every((id) => document.getElementById(id).value.trim() !== '');
+    }
+
+    function allUploadsReady() {
+      return DOCUMENTS.every((d) => slotState[d.key].state === 'ready');
+    }
+
+    function updateSubmitState() {
+      document.getElementById('submit-btn').disabled = isSubmitting || !currentUid || !formFieldsValid() || !allUploadsReady();
+    }
+
+    document.getElementById('signup-form').addEventListener('input', updateSubmitState);
+    document.getElementById('signup-form').addEventListener('change', updateSubmitState);
+
+    // --- Auth ---
+    const authStatusEl = document.getElementById('auth-status');
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUid = user.uid;
+        authStatusEl.textContent = 'Connected. Ready to submit.';
+        authStatusEl.classList.remove('text-slate-400', 'text-red-300');
+        authStatusEl.classList.add('text-emerald-300');
         updateSubmitState();
       }
+    });
+    signInAnonymously(auth).catch((err) => {
+      console.error('anonymous sign-in failed', err);
+      authStatusEl.textContent = 'Could not connect to submission service. Anonymous Authentication may not be enabled, or the domain may not be authorized.';
+      authStatusEl.classList.remove('text-slate-400', 'text-emerald-300');
+      authStatusEl.classList.add('text-red-300');
+    });
 
-      function updateUploadCount() {
-        var done = DOCUMENTS.filter(function (d) { return slotState[d.key].state === 'ready'; }).length;
-        document.getElementById('upload-count').textContent = String(done);
+    // --- Submit ---
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('form-error');
+      errorEl.classList.add('hidden');
+
+      if (!currentUid) {
+        errorEl.textContent = 'Not connected to submission service yet.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      if (!formFieldsValid() || !allUploadsReady()) {
+        errorEl.textContent = 'Please complete all fields and upload all 11 required documents.';
+        errorEl.classList.remove('hidden');
+        return;
       }
 
-      function formFieldsValid() {
-        var ids = ['companyName', 'companyAddress', 'contactPerson', 'contactNumber', 'emailAddress', 'fleetSize'];
-        return ids.every(function (id) { return document.getElementById(id).value.trim() !== ''; });
-      }
+      isSubmitting = true;
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
 
-      function allUploadsReady() {
-        return DOCUMENTS.every(function (d) { return slotState[d.key].state === 'ready'; });
-      }
+      const documents = {};
+      DOCUMENTS.forEach((d) => {
+        const s = slotState[d.key];
+        documents[d.key] = {
+          label: d.label,
+          fileName: s.fileName || '',
+          size: s.size || 0,
+          contentType: s.contentType || '',
+          storagePath: s.storagePath || '',
+          downloadUrl: s.downloadUrl || ''
+        };
+      });
 
-      function updateSubmitState() {
-        document.getElementById('submit-btn').disabled = !(formFieldsValid() && allUploadsReady());
-      }
+      const payload = {
+        uid: currentUid,
+        companyName: document.getElementById('companyName').value.trim(),
+        companyAddress: document.getElementById('companyAddress').value.trim(),
+        contactPerson: document.getElementById('contactPerson').value.trim(),
+        contactNumber: document.getElementById('contactNumber').value.trim(),
+        emailAddress: document.getElementById('emailAddress').value.trim(),
+        fleetSize: document.getElementById('fleetSize').value,
+        documents,
+        status: 'submitted',
+        submittedAt: serverTimestamp(),
+        userAgent: navigator.userAgent
+      };
 
-      document.getElementById('signup-form').addEventListener('input', updateSubmitState);
-      document.getElementById('signup-form').addEventListener('change', updateSubmitState);
-
-      // --- Submit (preview mode: validate only) ---
-      document.getElementById('signup-form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var errorEl = document.getElementById('form-error');
-        errorEl.classList.add('hidden');
-
-        if (!formFieldsValid() || !allUploadsReady()) {
-          errorEl.textContent = 'Please complete all fields and upload all 11 required documents.';
-          errorEl.classList.remove('hidden');
-          return;
-        }
-
-        // Hook for future Firebase integration:
-        //   var payload = collectPayload();
-        //   await uploadFilesToStorage(payload.documents);
-        //   await writeSignupDoc(payload);
-        // For now, just show the validated state.
-
+      try {
+        await setDoc(doc(db, 'landing_signups', currentUid), payload);
         document.getElementById('signup-form').classList.add('hidden');
-        document.getElementById('success-panel').classList.remove('hidden');
+        const panel = document.getElementById('success-panel');
+        panel.classList.remove('hidden');
+        document.getElementById('ref-id').textContent = currentUid;
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
+      } catch (err) {
+        console.error('submit error', err);
+        let msg = 'Submission failed. Please try again.';
+        if (err && err.code === 'permission-denied') {
+          msg = 'Submission rejected by Firestore. The security rules may need to be re-published.';
+        } else if (err && err.message) {
+          msg = err.message;
+        }
+        errorEl.textContent = msg;
+        errorEl.classList.remove('hidden');
+        isSubmitting = false;
+        submitBtn.textContent = 'Submit Application';
+        updateSubmitState();
+      }
+    });
 
-      document.getElementById('reset-btn').addEventListener('click', function () {
-        document.getElementById('signup-form').reset();
-        DOCUMENTS.forEach(function (d) {
-          slotState[d.key] = { state: 'idle' };
-          renderSlot(d.key);
-        });
-        document.getElementById('success-panel').classList.add('hidden');
-        document.getElementById('signup-form').classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-
-      updateSubmitState();
-    })();
+    updateSubmitState();
   </script>
 </body>
 </html>

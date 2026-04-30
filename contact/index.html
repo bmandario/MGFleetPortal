@@ -265,16 +265,39 @@
     const emailErr = document.getElementById('email-error');
     const phoneErr = document.getElementById('phone-error');
 
-    // Email must be local@domain.tld where TLD is 3+ alphabetic chars
-    // (blocks typos like @gmail.co for @gmail.com). Multi-segment TLDs
-    // like .com.ph still pass because the regex matches the longest
-    // segment after the local part.
-    const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{3,}$/;
+    const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+    // Whitelist of valid email TLDs / public suffixes. Pure regex can't
+    // catch typos like .con or .cmo because they're structurally valid;
+    // checking against a known-good list of real TLDs does.
+    // Note: this only checks the TLD suffix, NOT the second-level
+    // (company) domain. Any company email with a real TLD passes.
+    const VALID_TLDS = new Set([
+      'com','net','org','edu','gov','mil','int','info','biz','name','pro',
+      'mobi','app','dev','io','ai','co','me','tv','xyz','site','online',
+      'tech','shop','store','asia','cloud','digital',
+      'ph','com.ph','org.ph','gov.ph','edu.ph','net.ph',
+      'us','uk','co.uk','au','com.au','ca','sg','com.sg','jp','co.jp',
+      'kr','cn','com.cn','hk','com.hk','in','co.in','th','co.th',
+      'my','com.my','vn','com.vn','id','co.id','nz','co.nz',
+      'de','fr','es','it','nl','eu','ie','ch','se','no','fi','dk','pt','be','at',
+      'br','com.br','mx','com.mx','ar','com.ar','ru'
+    ]);
+
+    function hasValidTld(domain) {
+      const parts = domain.toLowerCase().split('.');
+      if (parts.length < 2) return false;
+      const last1 = parts[parts.length - 1];
+      const last2 = parts.slice(-2).join('.');
+      return VALID_TLDS.has(last1) || VALID_TLDS.has(last2);
+    }
 
     function validateEmail(value) {
       if (!value) return 'Email is required.';
       if (value.length > 254) return 'Email is too long.';
       if (!EMAIL_RE.test(value)) return 'Enter a valid email address (e.g. you@example.com).';
+      const domain = value.slice(value.lastIndexOf('@') + 1);
+      if (!hasValidTld(domain)) return 'Email domain looks invalid — check the spelling (e.g. .com not .con).';
       return null;
     }
 

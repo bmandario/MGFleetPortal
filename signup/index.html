@@ -117,11 +117,16 @@
               </div>
               <div>
                 <label for="contactNumber" class="block text-sm font-medium text-slate-200">Contact No. <span class="text-red-400">*</span></label>
-                <input type="tel" id="contactNumber" name="contactNumber" required class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="+63 9XX XXX XXXX" />
+                <div class="mt-2 flex">
+                  <span class="inline-flex select-none items-center rounded-l-xl border border-r-0 border-white/10 bg-slate-900 px-3 text-sm font-medium text-slate-300">+63</span>
+                  <input type="tel" id="contactNumber" name="contactNumber" required autocomplete="tel" inputmode="numeric" maxlength="10" pattern="9[0-9]{9}" class="w-full rounded-r-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="9XX XXX XXXX" />
+                </div>
+                <p id="contactNumber-error" class="hidden mt-2 text-xs text-red-400"></p>
               </div>
               <div>
                 <label for="emailAddress" class="block text-sm font-medium text-slate-200">Email Address <span class="text-red-400">*</span></label>
-                <input type="email" id="emailAddress" name="emailAddress" required class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="you@example.com" />
+                <input type="email" id="emailAddress" name="emailAddress" required autocomplete="email" inputmode="email" class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="you@example.com" />
+                <p id="emailAddress-error" class="hidden mt-2 text-xs text-red-400"></p>
               </div>
               <div>
                 <label for="fleetSize" class="block text-sm font-medium text-slate-200">Fleet Size <span class="text-red-400">*</span></label>
@@ -430,7 +435,10 @@
 
     function formFieldsValid() {
       const ids = ['companyName', 'companyAddress', 'contactPerson', 'contactNumber', 'emailAddress', 'fleetSize'];
-      return ids.every((id) => document.getElementById(id).value.trim() !== '');
+      if (!ids.every((id) => document.getElementById(id).value.trim() !== '')) return false;
+      if (validateEmail(document.getElementById('emailAddress').value.trim())) return false;
+      if (validatePhone(document.getElementById('contactNumber').value.trim())) return false;
+      return true;
     }
 
     function allUploadsReady() {
@@ -443,6 +451,88 @@
 
     document.getElementById('signup-form').addEventListener('input', updateSubmitState);
     document.getElementById('signup-form').addEventListener('change', updateSubmitState);
+
+    // --- Email + phone validation ---
+    const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    const VALID_TLDS = new Set([
+      'com','net','org','edu','gov','mil','int','info','biz','name','pro',
+      'mobi','app','dev','io','ai','co','me','tv','xyz','site','online',
+      'tech','shop','store','asia','cloud','digital',
+      'ph','com.ph','org.ph','gov.ph','edu.ph','net.ph',
+      'us','uk','co.uk','au','com.au','ca','sg','com.sg','jp','co.jp',
+      'kr','cn','com.cn','hk','com.hk','in','co.in','th','co.th',
+      'my','com.my','vn','com.vn','id','co.id','nz','co.nz',
+      'de','fr','es','it','nl','eu','ie','ch','se','no','fi','dk','pt','be','at',
+      'br','com.br','mx','com.mx','ar','com.ar','ru'
+    ]);
+
+    function hasValidTld(domain) {
+      const parts = domain.toLowerCase().split('.');
+      if (parts.length < 2) return false;
+      const last1 = parts[parts.length - 1];
+      const last2 = parts.slice(-2).join('.');
+      return VALID_TLDS.has(last1) || VALID_TLDS.has(last2);
+    }
+
+    function validateEmail(value) {
+      if (!value) return 'Email is required.';
+      if (value.length > 254) return 'Email is too long.';
+      if (!EMAIL_RE.test(value)) return 'Enter a valid email address (e.g. you@example.com).';
+      const domain = value.slice(value.lastIndexOf('@') + 1);
+      if (!hasValidTld(domain)) return 'Email domain looks invalid — check the spelling (e.g. .com not .con).';
+      return null;
+    }
+
+    function validatePhone(value) {
+      if (!value) return 'Phone number is required.';
+      if (!/^9\d{9}$/.test(value)) {
+        if (value.length !== 10) return 'Phone number must be 10 digits.';
+        return 'Phone number must start with 9 (e.g. 9171234567).';
+      }
+      return null;
+    }
+
+    function setFieldError(input, errId, msg) {
+      const errEl = document.getElementById(errId);
+      if (msg) {
+        errEl.textContent = msg;
+        errEl.classList.remove('hidden');
+        input.classList.remove('border-white/10');
+        input.classList.add('border-red-500');
+      } else {
+        errEl.classList.add('hidden');
+        input.classList.remove('border-red-500');
+        input.classList.add('border-white/10');
+      }
+    }
+
+    const emailEl = document.getElementById('emailAddress');
+    const phoneEl = document.getElementById('contactNumber');
+
+    emailEl.addEventListener('blur', () => setFieldError(emailEl, 'emailAddress-error', validateEmail(emailEl.value.trim())));
+    emailEl.addEventListener('input', () => { if (!document.getElementById('emailAddress-error').classList.contains('hidden')) setFieldError(emailEl, 'emailAddress-error', validateEmail(emailEl.value.trim())); });
+
+    phoneEl.addEventListener('input', () => {
+      const cleaned = phoneEl.value.replace(/\D/g, '').slice(0, 10);
+      if (cleaned !== phoneEl.value) phoneEl.value = cleaned;
+      if (!document.getElementById('contactNumber-error').classList.contains('hidden')) setFieldError(phoneEl, 'contactNumber-error', validatePhone(phoneEl.value));
+    });
+    phoneEl.addEventListener('keydown', (e) => {
+      const allowed = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'Home', 'End', 'ArrowLeft', 'ArrowRight'];
+      if (allowed.includes(e.key)) return;
+      if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x', 'z'].includes(e.key.toLowerCase())) return;
+      if (!/^\d$/.test(e.key)) e.preventDefault();
+    });
+    phoneEl.addEventListener('paste', (e) => {
+      const text = (e.clipboardData || window.clipboardData).getData('text');
+      const cleaned = text.replace(/\D/g, '').slice(0, 10);
+      e.preventDefault();
+      const start = phoneEl.selectionStart || 0;
+      const end = phoneEl.selectionEnd || 0;
+      phoneEl.value = (phoneEl.value.slice(0, start) + cleaned + phoneEl.value.slice(end)).slice(0, 10);
+      if (!document.getElementById('contactNumber-error').classList.contains('hidden')) setFieldError(phoneEl, 'contactNumber-error', validatePhone(phoneEl.value));
+    });
+    phoneEl.addEventListener('blur', () => setFieldError(phoneEl, 'contactNumber-error', validatePhone(phoneEl.value)));
 
     // --- Auth ---
     const authStatusEl = document.getElementById('auth-status');
@@ -473,8 +563,16 @@
         errorEl.classList.remove('hidden');
         return;
       }
+      // Surface field-level validation messages so the user sees what's wrong
+      const emailMsg = validateEmail(emailEl.value.trim());
+      const phoneMsg = validatePhone(phoneEl.value.trim());
+      setFieldError(emailEl, 'emailAddress-error', emailMsg);
+      setFieldError(phoneEl, 'contactNumber-error', phoneMsg);
+
       if (!formFieldsValid() || !allUploadsReady()) {
-        errorEl.textContent = 'Please complete all fields and upload all 11 required documents.';
+        errorEl.textContent = (emailMsg || phoneMsg)
+          ? 'Please fix the highlighted fields.'
+          : 'Please complete all fields and upload all 11 required documents.';
         errorEl.classList.remove('hidden');
         return;
       }
@@ -501,7 +599,7 @@
         companyName: document.getElementById('companyName').value.trim(),
         companyAddress: document.getElementById('companyAddress').value.trim(),
         contactPerson: document.getElementById('contactPerson').value.trim(),
-        contactNumber: document.getElementById('contactNumber').value.trim(),
+        contactNumber: '+63' + document.getElementById('contactNumber').value.trim(),
         emailAddress: document.getElementById('emailAddress').value.trim(),
         fleetSize: document.getElementById('fleetSize').value,
         documents,

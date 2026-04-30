@@ -100,11 +100,13 @@
               <div class="grid gap-5 sm:grid-cols-2">
                 <div>
                   <label for="email" class="block text-sm font-medium text-slate-200">Email <span class="text-red-400">*</span></label>
-                  <input type="email" id="email" name="email" required class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="you@example.com" />
+                  <input type="email" id="email" name="email" required autocomplete="email" inputmode="email" class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="you@example.com" />
+                  <p id="email-error" class="hidden mt-2 text-xs text-red-400"></p>
                 </div>
                 <div>
                   <label for="phone" class="block text-sm font-medium text-slate-200">Phone <span class="text-red-400">*</span></label>
-                  <input type="tel" id="phone" name="phone" required class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="+63 9XX XXX XXXX" />
+                  <input type="tel" id="phone" name="phone" required autocomplete="tel" inputmode="tel" class="mt-2 w-full rounded-xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white placeholder-slate-500 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="+63 9XX XXX XXXX or 09XX XXX XXXX" />
+                  <p id="phone-error" class="hidden mt-2 text-xs text-red-400"></p>
                 </div>
               </div>
 
@@ -255,19 +257,74 @@
       statusEl.classList.add('text-red-300');
     });
 
+    const emailEl = document.getElementById('email');
+    const phoneEl = document.getElementById('phone');
+    const emailErr = document.getElementById('email-error');
+    const phoneErr = document.getElementById('phone-error');
+
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    function validateEmail(value) {
+      if (!value) return 'Email is required.';
+      if (value.length > 254) return 'Email is too long.';
+      if (!EMAIL_RE.test(value)) return 'Enter a valid email address (e.g. you@example.com).';
+      return null;
+    }
+
+    function validatePhone(value) {
+      if (!value) return 'Phone number is required.';
+      const digits = value.replace(/\D/g, '');
+      // Accept: 9XXXXXXXXX (10), 09XXXXXXXXX (11), 639XXXXXXXXX (12), or general 7–15 digit international.
+      if (digits.length < 7) return 'Phone number is too short.';
+      if (digits.length > 15) return 'Phone number is too long.';
+      // Common PH mobile shapes — softly enforce, but allow other valid international formats.
+      const looksPh = /^(?:0?9\d{9}|639\d{9})$/.test(digits);
+      const looksIntl = /^\+?\d{7,15}$/.test(value.replace(/[\s\-()]/g, ''));
+      if (!looksPh && !looksIntl) return 'Enter a valid phone number (e.g. +63 9XX XXX XXXX).';
+      return null;
+    }
+
+    function setFieldError(input, errEl, msg) {
+      if (msg) {
+        errEl.textContent = msg;
+        errEl.classList.remove('hidden');
+        input.classList.remove('border-white/10');
+        input.classList.add('border-red-500');
+      } else {
+        errEl.classList.add('hidden');
+        input.classList.remove('border-red-500');
+        input.classList.add('border-white/10');
+      }
+    }
+
+    emailEl.addEventListener('blur', () => setFieldError(emailEl, emailErr, validateEmail(emailEl.value.trim())));
+    phoneEl.addEventListener('blur', () => setFieldError(phoneEl, phoneErr, validatePhone(phoneEl.value.trim())));
+    emailEl.addEventListener('input', () => { if (!emailErr.classList.contains('hidden')) setFieldError(emailEl, emailErr, validateEmail(emailEl.value.trim())); });
+    phoneEl.addEventListener('input', () => { if (!phoneErr.classList.contains('hidden')) setFieldError(phoneEl, phoneErr, validatePhone(phoneEl.value.trim())); });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       errorEl.classList.add('hidden');
 
       const name = document.getElementById('name').value.trim();
       const company = document.getElementById('company').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const phone = document.getElementById('phone').value.trim();
+      const email = emailEl.value.trim();
+      const phone = phoneEl.value.trim();
       const fleetSize = document.getElementById('fleetSize').value.trim();
       const message = document.getElementById('message').value.trim();
 
-      if (!name || !company || !email || !phone || !fleetSize || !message) {
+      const emailMsg = validateEmail(email);
+      const phoneMsg = validatePhone(phone);
+      setFieldError(emailEl, emailErr, emailMsg);
+      setFieldError(phoneEl, phoneErr, phoneMsg);
+
+      if (!name || !company || !fleetSize || !message) {
         errorEl.textContent = 'Please complete all required fields.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      if (emailMsg || phoneMsg) {
+        errorEl.textContent = 'Please fix the highlighted fields.';
         errorEl.classList.remove('hidden');
         return;
       }
